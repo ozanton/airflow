@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from airflow.models import DAG
 from airflow.operators.bash import BashOperator
 
@@ -6,7 +6,7 @@ from airflow.operators.bash import BashOperator
 default_args = {
     "owner": "etl_user",
     "depends_on_past": False,
-    "start_date": datetime(2024, 3, 15),
+    "start_date": datetime(2024, 4, 16),
     "retries": 3,
     "retry_delay": timedelta(seconds=10),
     #"trigger_rule": "all_success",  # правило выполнения

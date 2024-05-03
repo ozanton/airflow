@@ -7,7 +7,7 @@ from airflow.operators.bash import BashOperator
 default_args = {
     "owner": "etl_user",
     "depends_on_past": False,
-    "start_date": datetime(2024, 4, 4),
+    "start_date": datetime(2024, 4, 16),
     "retries": 3,
     "retry_delay": timedelta(seconds=10),
     #"trigger_rule": "all_success",  # правило выполнения
