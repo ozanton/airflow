@@ -166,4 +166,4 @@ SET min_temp_c = EXCLUDED.min_temp_c,
     avg_clouds = EXCLUDED.avg_clouds;""",
     dag=dag)
 
-wait_for_dag_run_windy >> [task1, task2] >> [task3, task4] >> task5
+wait_for_dag_run_windy >> [task1, task2] >> task3 >> task4 >> task5
