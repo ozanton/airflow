@@ -23,7 +23,8 @@ dag = DAG('dag_dm_windy', default_args=default_args, schedule_interval='10 1/3 *
 wait_for_dag_run_windy = ExternalTaskSensor(
     task_id='wait_for_dag_run_windy',
     external_dag_id='dag_run_windy',
-    external_task_id='some_task_in_dag_run_windy',
+    external_task_id=None,
+    mode='reschedule',
     dag=dag,
 )
 
