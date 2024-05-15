@@ -1,7 +1,11 @@
 from datetime import datetime, timedelta
 from airflow.models import DAG
+from airflow.hooks.base_hook import BaseHook
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.sensors.external_task import ExternalTaskSensor
+from utils.check_table_sensor import CheckTableSensor
+
+connection = BaseHook.get_connection("weather_postgreSQL_con")
 
 default_args = {
     "owner": "etl_user",
@@ -119,6 +123,26 @@ SET total_precip = EXCLUDED.total_precip,
     avg_clouds = EXCLUDED.avg_clouds;""",
     dag=dag)
 
+task_check_windy_wind_daily = CheckTableSensor(
+    task_id=f'task_check_windy_wind_daily',
+    timeout=1000,
+    mode='reschedule',
+    poke_interval=10,
+    conn=connection,
+    table_name='windy_wind_daily',
+    dag=dag
+)
+
+task_check_windy_other_daily = CheckTableSensor(
+    task_id=f'task_check_windy_other_daily',
+    timeout=1000,
+    mode='reschedule',
+    poke_interval=10,
+    conn=connection,
+    table_name='windy_other_daily',
+    dag=dag
+)
+
 task5 = PostgresOperator(
     task_id='windy_dm_all',
     postgres_conn_id="weather_postgreSQL_con",
@@ -166,4 +190,9 @@ SET min_temp_c = EXCLUDED.min_temp_c,
     avg_clouds = EXCLUDED.avg_clouds;""",
     dag=dag)
 
-wait_for_dag_run_windy >> [task1, task2] >> task3 >> task4 >> task5
+wait_for_dag_run_windy.set_downstream([task1, task2])
+task1.set_downstream(task3)
+task2.set_downstream(task4)
+task3.set_downstream([task_check_windy_wind_daily])
+task4.set_downstream([task_check_windy_other_daily])
+task5.set_upstream([task_check_windy_wind_daily, task_check_windy_other_daily])
