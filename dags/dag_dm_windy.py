@@ -25,6 +25,7 @@ wait_for_dag_run_windy = ExternalTaskSensor(
     external_dag_id='dag_run_windy',
     external_task_id=None,
     mode='reschedule',
+    poke_interval=10,
     dag=dag,
 )
 
